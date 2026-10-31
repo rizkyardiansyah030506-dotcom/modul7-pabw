@@ -22,7 +22,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('laporan.daftar'));
+            return redirect()->intended(route('laporan.index'));
         }
 
         return back()
@@ -36,6 +36,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('laporan.form');
+        return redirect()->route('laporan.create');
     }
 }

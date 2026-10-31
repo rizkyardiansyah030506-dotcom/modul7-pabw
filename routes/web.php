@@ -1,26 +1,32 @@
 <?php
 
 use App\Http\Controllers\LaporBanjirController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('laporan.form'));
 
-Route::get('/laporan', [LaporBanjirController::class, 'form'])->name('laporan.form');
-Route::post('/laporan/konfirmasi', [LaporBanjirController::class, 'konfirmasi'])->name('laporan.konfirmasi');
-Route::get('/laporan/daftar', [LaporBanjirController::class, 'daftar'])->middleware('auth')->name('laporan.daftar');
+Route::get('/', fn () => redirect()->route('laporan.create'));
+Route::get('/lapor', [LaporBanjirController::class, 'create'])->name('laporan.create');
+Route::post('/lapor', [LaporBanjirController::class, 'store'])->name('laporan.store');
 
-// ===== Authentication manual =====
-Route::get('/register', [\App\Http\Controllers\RegisterController::class, 'create'])
+
+Route::resource('laporan', LaporBanjirController::class)
+    ->except(['create', 'store'])
+    ->middleware('auth');
+
+
+Route::get('/register', [RegisterController::class, 'create'])
     ->middleware('guest')->name('register');
-Route::post('/register', [\App\Http\Controllers\RegisterController::class, 'store'])
+Route::post('/register', [RegisterController::class, 'store'])
     ->middleware('guest');
 
-Route::get('/login', [\App\Http\Controllers\LoginController::class, 'create'])
+Route::get('/login', [LoginController::class, 'create'])
     ->middleware('guest')->name('login');
-Route::post('/login', [\App\Http\Controllers\LoginController::class, 'store'])
+Route::post('/login', [LoginController::class, 'store'])
     ->middleware('guest');
 
-Route::post('/logout', [\App\Http\Controllers\LoginController::class, 'destroy'])
+Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')->name('logout');
 
 Route::get('/profil', fn () => view('auth.profil'))

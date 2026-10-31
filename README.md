@@ -1,25 +1,36 @@
 # LaporBanjir (BPBD Kabupaten Bandung)
 
-Prototipe sistem pelaporan banjir — Laravel + Blade Template, tanpa database (data berupa array di Controller).
+Aplikasi pelaporan banjir: warga mengirim laporan + foto bukti, petugas mengelola laporan setelah login.
+Laravel + Blade, autentikasi **manual** (tanpa Breeze), database MySQL `db_laporbanjir`.
 
 ## Menjalankan
 ```
 composer install
+copy .env.example .env      (Linux/Mac: cp .env.example .env)
+php artisan key:generate
+# buat database db_laporbanjir di phpMyAdmin, cek DB_* di .env
+php artisan migrate
+php artisan storage:link
+php artisan db:seed --class=PetugasSeeder
 php artisan serve
 ```
-Buka http://127.0.0.1:8000
+Buka http://127.0.0.1:8000. Login petugas: `admin@bpbd.bandungkab.go.id` / `Admin12345`.
 
 ## Halaman
-| Route | Nama | Keterangan |
-|---|---|---|
-| GET /laporan | laporan.form | Form pelaporan |
-| POST /laporan/konfirmasi | laporan.konfirmasi | Konfirmasi data terkirim (`<x-alert>`) |
-| GET /laporan/daftar | laporan.daftar | Daftar laporan + status |
+| Route | Nama | Akses | Keterangan |
+|---|---|---|---|
+| GET /lapor | laporan.create | Warga | Form pelaporan + foto |
+| POST /lapor | laporan.store | Warga | Simpan laporan (status Menunggu) |
+| GET /laporan | laporan.index | Petugas (auth) | Daftar + thumbnail + pagination |
+| GET /laporan/{id} | laporan.show | Petugas (auth) | Detail laporan |
+| GET /laporan/{id}/edit | laporan.edit | Petugas (auth) | Edit, ganti foto, ubah status |
+| PUT /laporan/{id} | laporan.update | Petugas (auth) | Simpan perubahan |
+| DELETE /laporan/{id} | laporan.destroy | Petugas (auth) | Hapus laporan + foto |
 
-Status genangan: < 30 cm Waspada, 30–70 cm Siaga, > 70 cm Awas.
+Status penanganan: Menunggu, Diproses, Selesai.
+Tingkat genangan: < 30 cm Waspada, 30-70 cm Siaga, > 70 cm Awas.
 
-## Struktur Blade
-- `layouts/app.blade.php` — layout utama (`@yield`)
-- `laporan/*.blade.php` — `@extends`, `@section`
-- `partials/laporan-card.blade.php` — `@include`
-- `components/alert.blade.php` — `<x-alert>`
+## Tes
+```
+php artisan test
+```
